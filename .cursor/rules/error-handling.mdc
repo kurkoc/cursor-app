@@ -1,0 +1,26 @@
+---
+globs: app/**/*,components/**/*
+description: Error handling, validation, and logging rules
+---
+### Error Handling & Validation
+
+- Validate external inputs with Zod at boundaries; fail fast with helpful messages.
+- Start functions by checking for error conditions and early-return.
+- Avoid deep nesting; structure with guard clauses.
+- Add global error boundaries for UI fallback.
+- Log and report errors in production via Sentry or `expo-error-reporter`.
+
+### Example
+
+```ts
+import { z } from 'zod';
+
+const UserSchema = z.object({ id: z.string(), name: z.string().min(1) });
+
+export function parseUser(input: unknown) {
+  const result = UserSchema.safeParse(input);
+  if (!result.success) return null; // early return
+  return result.data;
+}
+```
+

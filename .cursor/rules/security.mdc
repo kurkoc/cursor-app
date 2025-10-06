@@ -1,0 +1,12 @@
+---
+globs: app/**/*,components/**/*
+description: Security guidelines for Expo apps
+---
+### Security
+
+- Sanitize and validate user inputs; never trust network data blindly.
+- Use `react-native-encrypted-storage` for sensitive data at rest.
+- Communicate over HTTPS with proper auth; rotate tokens and handle refresh.
+- Follow Expo security guide (`https://docs.expo.dev/guides/security/`).
+- Restrict permissions; request at runtime with clear rationale.
+

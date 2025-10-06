@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+### Naming Conventions
+
+- Directories: lowercase-with-dashes (e.g., `components/auth-wizard`).
+- Favor named exports for components and utilities.
+- Variables with auxiliary verbs: `isLoading`, `hasError`, `canSubmit`.
+- Files: match primary export (e.g., `hello-wave.tsx`).
+

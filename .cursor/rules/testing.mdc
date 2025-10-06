@@ -1,0 +1,12 @@
+---
+globs: **/*
+description: Testing strategy for Expo React Native apps
+---
+### Testing
+
+- Unit tests: Jest + React Native Testing Library for components and hooks.
+- Integration/e2e: Detox for critical flows.
+- Use Expo testing tools for multiple environments.
+- Snapshot tests for stable UI components sparingly.
+- Mock native modules with stable interfaces; validate i18n fallbacks and dark mode.
+

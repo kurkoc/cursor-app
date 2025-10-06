@@ -1,0 +1,23 @@
+---
+alwaysApply: true
+---
+### Navigation (Expo Router)
+
+- Use file-based routing under `app/`; organize shared UI in layout routes (e.g., `(tabs)/_layout.tsx`).
+- Prefer typed routes; export route params interfaces and use them with `Link` and `router.push`.
+- Implement dynamic routes for entity screens (e.g., `app/users/[id].tsx`).
+- Configure deep linking and universal links via `app.json`.
+- Co-locate screen-specific helpers and types with the screen file.
+
+### Example
+
+```tsx
+import { Link } from 'expo-router';
+
+export interface UserRouteParams { id: string }
+
+export function UsersList() {
+  return <Link href={{ pathname: '/users/[id]', params: { id: '1' } }}>Open user</Link>;
+}
+```
+

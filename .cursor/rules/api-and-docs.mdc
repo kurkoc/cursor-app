@@ -1,0 +1,11 @@
+---
+alwaysApply: false
+description: References to Expo documentation and API usage
+---
+### API & Documentation
+
+- Follow Expo official docs for setup/config: `https://docs.expo.dev/`.
+- Use `expo-constants` for environment/config.
+- Handle device permissions via Expo modules with clear UX.
+- Configure OTA updates with `expo-updates`.
+

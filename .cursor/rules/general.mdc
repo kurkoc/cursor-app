@@ -1,0 +1,35 @@
+---
+alwaysApply: true
+---
+### General Expo + React Native Guidelines
+
+- **expertise**: TypeScript, React Native, Expo, Mobile UI.
+- **workflow**: Prefer Expo managed workflow. Follow Expo docs (`https://docs.expo.dev/`).
+- **project structure**: Organize routes in `app/` with Expo Router layouts. Keep directories lowercase with dashes.
+- **exports**: Favor named exports for components and utilities.
+- **files order**: exported component, subcomponents, helpers, static content, types.
+- **environment/config**: Use `expo-constants` for config; reference `app.json` and `tsconfig.json`.
+- **updates**: Use `expo-updates` for OTA.
+- **permissions**: Use `expo-permissions` or platform-specific modules via Expo when needed.
+- **deployment**: Follow Expo distribution best practices (`https://docs.expo.dev/distribution/introduction/`).
+- **platform parity**: Test on iOS and Android; avoid platform-specific forks unless required.
+
+### Performance
+
+- Minimize `useState`/`useEffect`; prefer Context + `useReducer` for shared state.
+- Lazy load non-critical screens/components (dynamic import + `Suspense`).
+- Optimize images: prefer WebP, include width/height, use `expo-image` with caching and lazy loading.
+- Memoize expensive trees with `React.memo`, and values with `useMemo`/`useCallback`.
+- Profile with React Native devtools and Expo performance tools.
+
+### Accessibility
+
+- Provide accessible labels/roles, support dynamic text sizing.
+- Ensure touch targets ≥ 44x44 and proper color contrast.
+
+### Error Handling
+
+- Validate inputs with Zod at boundaries.
+- Use early returns for error paths; avoid deep nesting.
+- Add global error boundary and production reporting (e.g., Sentry, `expo-error-reporter`).
+

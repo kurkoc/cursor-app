@@ -1,0 +1,27 @@
+---
+globs: app/**/*,components/**/*
+description: Safe area management with react-native-safe-area-context
+---
+### Safe Area Management
+
+- Wrap app root with `SafeAreaProvider` (usually in `app/_layout.tsx`).
+- Use `SafeAreaView` for top-level screens; avoid hardcoded insets.
+- For scrollable content, use a `SafeAreaView` wrapper with `ScrollView` or `FlatList` that respects insets.
+- Prefer hooks (`useSafeAreaInsets`) when custom spacing is required.
+
+### Example
+
+```tsx
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+export function RootLayout() {
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* router slots */}
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+```
+

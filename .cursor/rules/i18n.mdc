@@ -1,0 +1,11 @@
+---
+globs: app/**/*,components/**/*
+description: Internationalization and localization rules
+---
+### Internationalization (i18n)
+
+- Use `expo-localization` and an i18n lib (e.g., `react-native-i18n` or i18next).
+- Support multiple languages and RTL; test mirrored layouts.
+- Ensure text scales with system settings; avoid truncation and hardcoded widths.
+- Keep copy externalized; avoid inline strings in components.
+

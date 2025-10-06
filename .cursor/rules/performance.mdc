@@ -1,0 +1,13 @@
+---
+globs: app/**/*,components/**/*
+description: Performance optimization rules
+---
+### Performance Optimization
+
+- Prefer Context + `useReducer` for shared state; keep component trees pure.
+- Defer non-critical code with dynamic imports and `Suspense`.
+- Use `React.memo`, `useMemo`, `useCallback` to avoid wasted renders.
+- Images: WebP where supported, define `contentFit`, width/height, and caching in `expo-image`.
+- Startup: Use `SplashScreen` and avoid heavy work in initial render; hydrate data lazily.
+- Animations and gestures: use `react-native-reanimated` and `react-native-gesture-handler` APIs.
+

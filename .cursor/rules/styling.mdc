@@ -1,0 +1,25 @@
+---
+globs: app/**/*,components/**/*
+description: UI and styling rules for Expo + NativeWind
+---
+### UI & Styling
+
+- Prefer Expo built-ins (`View`, `Text`, `Pressable`, etc.) and `expo-image`.
+- Use NativeWind utility classes for rapid UI; fallback to `StyleSheet.create` for perf-critical styles.
+- Responsive layout: Flexbox + `useWindowDimensions` for breakpoints and conditional styles.
+- Support dark mode via `useColorScheme`; expose theme helpers (see `hooks/use-theme-color.ts`).
+- Ensure a11y: labels, roles, `accessibilityHint`, proper semantics for interactives.
+
+### Examples
+
+```tsx
+// Example component structure and theming
+export function ExampleCard(props: { title: string; onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" className="rounded-xl p-4 bg-white dark:bg-zinc-900" onPress={props.onPress}>
+      <Text className="text-zinc-900 dark:text-zinc-100 text-base font-semibold">{props.title}</Text>
+    </Pressable>
+  );
+}
+```
+

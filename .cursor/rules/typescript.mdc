@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+### TypeScript Usage
+
+- Enable strict mode (see [tsconfig.json](mdc:tsconfig.json)).
+- Use interfaces over type aliases for object shapes; avoid `enum` in favor of literal unions and maps.
+- Prefer functional components with explicit `Props` interfaces.
+- Export types and interfaces near usage; avoid `any` and unsafe casts.
+- Add return types for exported functions and hooks.
+
+### Syntax & Formatting
+
+- Use the `function` keyword for pure utilities; use arrow components for React FCs sparingly when needed.
+- Prefer concise conditionals and early returns; avoid unnecessary `else` branches.
+- Enforce Prettier defaults; keep imports ordered (stdlib, external, internal).
+
+### Naming
+
+- Variables with auxiliary verbs: `isLoading`, `hasError`, `shouldFetch`.
+- Components, hooks, and helpers use descriptive names; no abbreviations.
+
+### Patterns
+
+- Use discriminated unions for variant states.
+- Narrow unknown data via Zod before use.
+- Keep modules small and cohesive; iterate and reuse helpers over duplicating code.
+

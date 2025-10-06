@@ -1,0 +1,24 @@
+---
+globs: app/**/*,components/**/*
+description: State management guidelines
+---
+### State Management
+
+- Global/shared state: React Context + `useReducer` for deterministic updates.
+- Server state: use `@tanstack/react-query` for fetching, caching, and invalidation.
+- Complex domain state: consider Zustand or Redux Toolkit when reducers become large.
+- Avoid excessive API calls; cache and invalidate strategically.
+- Parse URL/search params via `expo-linking` helpers when needed.
+
+### Example
+
+```tsx
+interface AppState { theme: 'light' | 'dark' }
+type AppAction = { type: 'toggle-theme' }
+
+function appReducer(state: AppState, action: AppAction): AppState {
+  if (action.type === 'toggle-theme') return { theme: state.theme === 'light' ? 'dark' : 'light' };
+  return state;
+}
+```
+
