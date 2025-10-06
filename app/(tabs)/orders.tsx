@@ -1,9 +1,9 @@
-import { Order, useAuth } from '@/contexts/auth-context';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import Feather from '@expo/vector-icons/Feather';
-import React from 'react';
-import { FlatList, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Order, useAuth } from "@/contexts/auth-context";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import Feather from "@expo/vector-icons/Feather";
+import React from "react";
+import { FlatList, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const { state } = useAuth();
@@ -16,64 +16,75 @@ export default function OrdersScreen() {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return "Today";
     }
     if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return "Yesterday";
     }
-    
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   }
 
-  function renderOrder({ item }: { item: Order }): JSX.Element {
+  function renderOrder({ item }: { item: Order }) {
+    // Her 10 kahve için 1 ikram kazanılır
+    const rewardsEarned = Math.floor(item.items.length / 10);
+    const hasReward = rewardsEarned > 0;
+
     return (
-      <View className="bg-white dark:bg-neutral-900 rounded-xl p-5 mb-3 border border-neutral-200 dark:border-neutral-800">
-        <View className="flex-row justify-between items-start mb-4">
+      <View className="bg-white dark:bg-neutral-900 rounded-xl px-2 py-3 mb-3 border border-neutral-200 dark:border-neutral-800 mx-0">
+        <View className="flex-row justify-between items-center">
           <View className="flex-1">
-            <Text className="text-base font-semibold text-black dark:text-white mb-1">
-              {formatDate(item.date)}
-            </Text>
-            <Text className="text-[13px] text-neutral-400 dark:text-neutral-600">
-              Order #{item.id}
-            </Text>
-          </View>
-          <Text className="text-lg font-semibold text-black dark:text-white -tracking-tight">
-            ${item.total.toFixed(2)}
-          </Text>
-        </View>
-        
-        <View className="h-px bg-neutral-100 dark:bg-neutral-800 mb-4" />
-        
-        <View className="gap-2">
-          {item.items.map((itemName, index) => (
-            <View key={index} className="flex-row items-center gap-3">
-              <Feather 
-                name="coffee" 
-                size={16} 
-                color={colorScheme === 'dark' ? '#a3a3a3' : '#737373'} 
+            <View className="flex-row items-center mb-2">
+              <Feather
+                name="calendar"
+                size={14}
+                color={colorScheme === "dark" ? "#a3a3a3" : "#737373"}
               />
-              <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                {itemName}
+              <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 ml-2">
+                {formatDate(item.date)}
               </Text>
             </View>
-          ))}
+            <View className="flex-row items-center">
+              <Text className="text-xl font-bold text-black dark:text-white mr-2">
+                {item.items.length}
+              </Text>
+              <Feather
+                name="coffee"
+                size={20}
+                color={colorScheme === "dark" ? "#ffffff" : "#000000"}
+              />
+            </View>
+          </View>
+
+          {hasReward && (
+            <View className="flex-row items-center bg-amber-100 dark:bg-amber-900/30 rounded-full px-3 py-2">
+              <Text className="text-lg font-bold text-amber-900 dark:text-amber-100 mr-1">
+                {rewardsEarned}
+              </Text>
+              <Feather
+                name="gift"
+                size={18}
+                color={colorScheme === "dark" ? "#fbbf24" : "#d97706"}
+              />
+            </View>
+          )}
         </View>
       </View>
     );
   }
 
-  function renderEmptyState(): JSX.Element {
+  function renderEmptyState() {
     return (
       <View className="items-center justify-center pt-20">
         <View className="w-20 h-20 rounded-full bg-neutral-50 dark:bg-neutral-900 items-center justify-center mb-5 border border-neutral-200 dark:border-neutral-800">
-          <Feather 
-            name="coffee" 
-            size={40} 
-            color={colorScheme === 'dark' ? '#404040' : '#d4d4d4'} 
+          <Feather
+            name="coffee"
+            size={40}
+            color={colorScheme === "dark" ? "#404040" : "#d4d4d4"}
           />
         </View>
         <Text className="text-lg font-semibold text-black dark:text-white mb-2">
@@ -87,24 +98,34 @@ export default function OrdersScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-black" edges={['bottom']}>
-      <View className="p-5 pb-4">
-        <Text className="text-2xl font-semibold text-black dark:text-white mb-1 -tracking-tight">
-          Order History
-        </Text>
-        <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-          {state.userData?.orders.length ?? 0} {(state.userData?.orders.length ?? 0) === 1 ? 'order' : 'orders'}
-        </Text>
+    <SafeAreaView
+      className="flex-1 bg-neutral-50 dark:bg-black"
+      edges={["top", "bottom"]}
+    >
+      <View className="px-5 pt-1 pb-4">
+        <View className="mb-6">
+          <View className="flex-row items-center">
+            <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+              <Feather
+                name="shopping-bag"
+                size={16}
+                color={colorScheme === "dark" ? "#60a5fa" : "#3b82f6"}
+              />
+            </View>
+            <Text className="text-2xl font-bold text-black dark:text-white">
+              Sipariş Geçmişi
+            </Text>
+          </View>
+        </View>
+        <FlatList
+          data={state.userData?.orders ?? []}
+          renderItem={renderOrder}
+          keyExtractor={(item) => item.id}
+          contentContainerClassName="px-0 pb-5"
+          ListEmptyComponent={renderEmptyState}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-
-      <FlatList
-        data={state.userData?.orders ?? []}
-        renderItem={renderOrder}
-        keyExtractor={item => item.id}
-        contentContainerClassName="p-5 pt-2"
-        ListEmptyComponent={renderEmptyState}
-        showsVerticalScrollIndicator={false}
-      />
     </SafeAreaView>
   );
 }
