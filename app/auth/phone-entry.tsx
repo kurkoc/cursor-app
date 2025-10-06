@@ -2,14 +2,13 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PhoneEntryScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   function formatPhoneNumber(input: string): string {
     const digits = input.replace(/\D/g, '');
@@ -38,30 +37,28 @@ export default function PhoneEntryScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-black">
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        className="flex-1"
       >
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.iconContainer}>
-              <Feather name="coffee" size={48} color={isDark ? '#ffffff' : '#000000'} />
+        <View className="flex-1 px-8 justify-center max-w-[440px] w-full self-center">
+          <View className="items-center mb-8">
+            <View className="w-24 h-24 rounded-full border-2 border-black dark:border-white items-center justify-center">
+              <Feather name="coffee" size={40} color={colorScheme === 'dark' ? '#ffffff' : '#000000'} />
             </View>
-            <Text style={[styles.title, isDark && styles.titleDark]}>Coffee Loyalty</Text>
-            <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
-              Enter your phone number to get started
-            </Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Phone Number</Text>
+          <View className="mb-6">
+            <Text className="text-sm font-medium text-black dark:text-white mb-2">
+              Phone Number
+            </Text>
             <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
+              className="h-14 border border-neutral-200 dark:border-neutral-800 rounded-lg px-4 text-base text-black dark:text-white bg-white dark:bg-neutral-900"
               value={phoneNumber}
               onChangeText={handlePhoneChange}
               placeholder="505 701 28 74"
-              placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
+              placeholderTextColor={colorScheme === 'dark' ? '#6b7280' : '#9ca3af'}
               keyboardType="phone-pad"
               maxLength={13}
               autoFocus
@@ -69,19 +66,19 @@ export default function PhoneEntryScreen() {
           </View>
 
           <Pressable
-            style={[
-              styles.button,
-              isValidPhone() && styles.buttonActive,
-              !isValidPhone() && styles.buttonInactive,
-            ]}
+            className={`h-14 rounded-lg items-center justify-center ${
+              isValidPhone() 
+                ? 'bg-black dark:bg-white' 
+                : 'bg-neutral-100 dark:bg-neutral-800'
+            }`}
             onPress={handleContinue}
             disabled={!isValidPhone()}
           >
-            <Text style={[
-              styles.buttonText,
-              isValidPhone() && styles.buttonTextActive,
-              !isValidPhone() && styles.buttonTextInactive,
-            ]}>
+            <Text className={`text-[15px] font-medium ${
+              isValidPhone() 
+                ? 'text-white dark:text-black' 
+                : 'text-neutral-400 dark:text-neutral-600'
+            }`}>
               Continue
             </Text>
           </Pressable>
@@ -90,98 +87,3 @@ export default function PhoneEntryScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  containerDark: {
-    backgroundColor: '#000000',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 32,
-    justifyContent: 'center',
-    maxWidth: 440,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  header: {
-    marginBottom: 48,
-  },
-  iconContainer: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 8,
-    letterSpacing: -0.5,
-  },
-  titleDark: {
-    color: '#ffffff',
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#737373',
-    lineHeight: 22,
-  },
-  subtitleDark: {
-    color: '#a3a3a3',
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  labelDark: {
-    color: '#ffffff',
-  },
-  input: {
-    height: 56,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: '#000000',
-    backgroundColor: '#ffffff',
-  },
-  inputDark: {
-    borderColor: '#262626',
-    color: '#ffffff',
-    backgroundColor: '#0a0a0a',
-  },
-  button: {
-    height: 56,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonActive: {
-    backgroundColor: '#000000',
-  },
-  buttonInactive: {
-    backgroundColor: '#f5f5f5',
-  },
-  buttonText: {
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  buttonTextActive: {
-    color: '#ffffff',
-  },
-  buttonTextInactive: {
-    color: '#a3a3a3',
-  },
-});
-

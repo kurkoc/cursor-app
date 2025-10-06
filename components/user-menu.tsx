@@ -1,16 +1,15 @@
 import { useAuth } from '@/contexts/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
+import Feather from '@expo/vector-icons/Feather';
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 
 export function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { dispatch } = useAuth();
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   function handleLogout(): void {
     setIsOpen(false);
@@ -32,14 +31,14 @@ export function UserMenu() {
     <View>
       <Pressable
         onPress={() => setIsOpen(true)}
-        style={[styles.trigger, isDark && styles.triggerDark]}
+        className="px-2 py-1"
       >
-        <View style={styles.triggerContent}>
-          <Feather name="user" size={22} color={isDark ? '#ffffff' : '#000000'} />
+        <View className="flex-row items-center gap-1.5">
+          <Feather name="user" size={22} color={colorScheme === 'dark' ? '#ffffff' : '#000000'} />
           <Feather 
             name={isOpen ? "chevron-up" : "chevron-down"} 
             size={16} 
-            color={isDark ? '#737373' : '#a3a3a3'} 
+            color={colorScheme === 'dark' ? '#737373' : '#a3a3a3'} 
           />
         </View>
       </Pressable>
@@ -51,41 +50,41 @@ export function UserMenu() {
         onRequestClose={() => setIsOpen(false)}
       >
         <Pressable
-          style={styles.overlay}
+          className="flex-1 bg-black/40 justify-start items-end pt-14 pr-5"
           onPress={() => setIsOpen(false)}
         >
-          <View style={styles.menuContainer}>
-            <View style={[styles.menu, isDark && styles.menuDark]}>
+          <View className="min-w-[220px]">
+            <View className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-xl shadow-black/20">
               <Pressable
-                style={[styles.menuItem, isDark && styles.menuItemDark]}
+                className="flex-row items-center gap-3 px-4 py-3.5"
                 onPress={handleProfile}
               >
-                <Feather name="user" size={18} color={isDark ? '#ffffff' : '#000000'} />
-                <Text style={[styles.menuText, isDark && styles.menuTextDark]}>
+                <Feather name="user" size={18} color={colorScheme === 'dark' ? '#ffffff' : '#000000'} />
+                <Text className="text-[15px] font-medium text-black dark:text-white">
                   Profil Bilgileri
                 </Text>
               </Pressable>
 
-              <View style={[styles.divider, isDark && styles.dividerDark]} />
+              <View className="h-px bg-neutral-100 dark:bg-neutral-800" />
 
               <Pressable
-                style={[styles.menuItem, isDark && styles.menuItemDark]}
+                className="flex-row items-center gap-3 px-4 py-3.5"
                 onPress={handleContact}
               >
-                <Feather name="mail" size={18} color={isDark ? '#ffffff' : '#000000'} />
-                <Text style={[styles.menuText, isDark && styles.menuTextDark]}>
+                <Feather name="mail" size={18} color={colorScheme === 'dark' ? '#ffffff' : '#000000'} />
+                <Text className="text-[15px] font-medium text-black dark:text-white">
                   İletişim Formu
                 </Text>
               </Pressable>
 
-              <View style={[styles.divider, isDark && styles.dividerDark]} />
+              <View className="h-px bg-neutral-100 dark:bg-neutral-800" />
 
               <Pressable
-                style={[styles.menuItem, styles.menuItemDanger, isDark && styles.menuItemDark]}
+                className="flex-row items-center gap-3 px-4 py-3.5"
                 onPress={handleLogout}
               >
-                <Feather name="log-out" size={18} color={isDark ? '#ef4444' : '#dc2626'} />
-                <Text style={[styles.menuText, styles.menuTextDanger]}>
+                <Feather name="log-out" size={18} color={colorScheme === 'dark' ? '#ef4444' : '#dc2626'} />
+                <Text className="text-[15px] font-medium text-red-600 dark:text-red-500">
                   Çıkış Yap
                 </Text>
               </Pressable>
@@ -96,77 +95,3 @@ export function UserMenu() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  trigger: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  triggerDark: {
-    // no specific dark styles needed
-  },
-  triggerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 60,
-    paddingRight: 20,
-  },
-  menuContainer: {
-    minWidth: 220,
-  },
-  menu: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  menuDark: {
-    backgroundColor: '#0a0a0a',
-    borderColor: '#262626',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    paddingHorizontal: 16,
-  },
-  menuItemDark: {
-    // handled via text and icon colors
-  },
-  menuItemDanger: {
-    // no background change
-  },
-  menuText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#000000',
-  },
-  menuTextDark: {
-    color: '#ffffff',
-  },
-  menuTextDanger: {
-    color: '#dc2626',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  dividerDark: {
-    backgroundColor: '#171717',
-  },
-});
-

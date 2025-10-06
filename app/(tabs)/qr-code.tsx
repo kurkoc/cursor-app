@@ -1,61 +1,28 @@
 import { useAuth } from '@/contexts/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function QrCodeScreen() {
   const { state } = useAuth();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   const qrValue = state.userData?.qrCode ?? 'NO-USER';
 
   return (
-    <SafeAreaView style={[styles.container, isDark && styles.containerDark]} edges={['bottom']}>
-      <View style={styles.content}>
-        <View style={[styles.qrCard, isDark && styles.qrCardDark]}>
+    <SafeAreaView className="flex-1 bg-neutral-50 dark:bg-black" edges={['bottom']}>
+      <View className="flex-1 p-5 justify-center">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-10 items-center mb-6 shadow-2xl shadow-black/20 dark:shadow-black/50">
           <QRCode
             value={qrValue}
             size={220}
-            backgroundColor={isDark ? '#0a0a0a' : '#ffffff'}
-            color={isDark ? '#ffffff' : '#000000'}
+            backgroundColor={colorScheme === 'dark' ? '#0a0a0a' : '#ffffff'}
+            color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
           />
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fafafa',
-  },
-  containerDark: {
-    backgroundColor: '#000000',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  qrCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 40,
-    alignItems: 'center',
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  qrCardDark: {
-    backgroundColor: '#0a0a0a',
-    shadowColor: '#000',
-    shadowOpacity: 0.5,
-  },
-});
