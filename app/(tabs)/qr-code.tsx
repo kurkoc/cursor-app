@@ -14,7 +14,7 @@ export default function QrCodeScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800"
+      className="flex-1 bg-white dark:bg-black"
       edges={["top", "bottom"]}
     >
       <ScrollView
@@ -40,7 +40,7 @@ export default function QrCodeScreen() {
         </View>
 
         {/* QR Code Section */}
-        <View className="bg-white dark:bg-slate-800 rounded-3xl p-8 items-center mb-8 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/5">
+        <View className="bg-white dark:bg-slate-800 rounded-3xl p-8 items-center mb-8 shadow-lg shadow-gray-200/20 dark:shadow-gray-900/20">
           <View className="bg-slate-50 dark:bg-slate-700 rounded-2xl p-6 mb-6">
             <QRCode
               value={qrValue}

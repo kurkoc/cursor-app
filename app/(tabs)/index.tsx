@@ -1,17 +1,48 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import Feather from "@expo/vector-icons/Feather";
+import { useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { state } = useAuth();
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
   const coffeeCount = state.userData?.coffeeCount ?? 0;
   const progress = coffeeCount % 10;
   const freeEarned = Math.floor(coffeeCount / 10);
+
+  // Drink recommendations data
+  const drinkRecommendations = [
+    { id: '1', name: 'Pumpkin Spice Latte', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
+    { id: '2', name: 'Iced Pumpkin Spice Latte', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
+    { id: '3', name: 'Pumpkin Spice Frappuccino®', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
+    { id: '4', name: 'Pumpkin Spice Cream Frappuccino®', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
+    { id: '5', name: 'Caramel Macchiato', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
+    { id: '6', name: 'Iced Caramel Macchiato', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
+    { id: '7', name: 'Cappuccino', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
+    { id: '8', name: 'Americano', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
+    { id: '9', name: 'Mocha', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
+    { id: '10', name: 'Espresso', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
+  ];
+
+  const renderDrinkItem = ({ item }: { item: typeof drinkRecommendations[0] }) => (
+    <View className="items-center mr-6">
+      <View className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-neutral-100 dark:bg-neutral-800">
+        <Image
+          source={{ uri: item.image }}
+          className="w-full h-full"
+          resizeMode="cover"
+        />
+      </View>
+      <Text className="text-sm text-center text-black dark:text-white font-medium" numberOfLines={2} style={{ maxWidth: 80 }}>
+        {item.name}
+      </Text>
+    </View>
+  );
 
   return (
     <SafeAreaView
@@ -23,20 +54,17 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Welcome Section */}
-        <View className="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-6">
+        <View className="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-4 mb-6">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">
+              <Text className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                 Hoşgeldiniz! 👋
               </Text>
-              <Text className="text-base text-blue-700 dark:text-blue-300">
-                Kahve keyfiniz için buradayız
-              </Text>
             </View>
-            <View className="w-16 h-16 rounded-full bg-blue-200 dark:bg-blue-800/30 items-center justify-center">
+            <View className="w-12 h-12 rounded-full bg-blue-200 dark:bg-blue-800/30 items-center justify-center">
               <Feather
                 name="coffee"
-                size={28}
+                size={20}
                 color={colorScheme === "dark" ? "#60a5fa" : "#3b82f6"}
               />
             </View>
@@ -77,6 +105,29 @@ export default function HomeScreen() {
               />
             </View>
           </View>
+        </View>
+
+        {/* Drink Recommendations Section */}
+        <View className="bg-white dark:bg-neutral-900 rounded-xl p-6 mb-6 border border-neutral-200 dark:border-neutral-800">
+          <View className="flex-row items-center justify-between mb-6">
+            <Text className="text-xl font-bold text-black dark:text-white">
+              Bunları denedin mi?
+            </Text>
+            <Pressable onPress={() => router.push('/menu')}>
+              <Text className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+                Tümü →
+              </Text>
+            </Pressable>
+          </View>
+          
+          <FlatList
+            data={drinkRecommendations}
+            renderItem={renderDrinkItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 24 }}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
