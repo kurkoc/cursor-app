@@ -13,6 +13,7 @@ export default function PhoneEntryScreen() {
   function formatPhoneNumber(input: string): string {
     const digits = input.replace(/\D/g, '');
     
+    // Turkish format: 5XX XXX XX XX
     if (digits.length <= 3) return digits;
     if (digits.length <= 6) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
     if (digits.length <= 8) return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
@@ -28,12 +29,17 @@ export default function PhoneEntryScreen() {
 
   function isValidPhone(): boolean {
     const digits = phoneNumber.replace(/\s/g, '');
-    return digits.length === 10;
+    const turkishPhoneRegex = /^5\d{9}$/;
+    return turkishPhoneRegex.test(digits);
   }
 
   function handleContinue(): void {
     if (!isValidPhone()) return;
-    router.push('/auth/pin-verification');
+    const phoneDigits = phoneNumber.replace(/\s/g, '');
+    router.push({
+      pathname: '/auth/pin-verification',
+      params: { phone: phoneDigits }
+    });
   }
 
   return (
@@ -57,7 +63,7 @@ export default function PhoneEntryScreen() {
               className="h-14 border border-neutral-200 dark:border-neutral-800 rounded-lg px-4 text-base text-black dark:text-white bg-white dark:bg-neutral-900"
               value={phoneNumber}
               onChangeText={handlePhoneChange}
-              placeholder="505 701 28 74"
+              placeholder="5XX XXX XX XX"
               placeholderTextColor={colorScheme === 'dark' ? '#6b7280' : '#9ca3af'}
               keyboardType="phone-pad"
               maxLength={13}

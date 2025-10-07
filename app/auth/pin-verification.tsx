@@ -1,22 +1,47 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { accountService, storageService } from "@/services";
 import Feather from "@expo/vector-icons/Feather";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PinVerificationScreen() {
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const router = useRouter();
   const { dispatch } = useAuth();
   const colorScheme = useColorScheme();
+  const { phone } = useLocalSearchParams<{ phone: string }>();
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
+
+  const registerPhone = useCallback(async (): Promise<void> => {
+    if (!phone) return;
+    
+    setIsRegistering(true);
+    try {
+      await accountService.register({ phone });
+      console.log('Registration successful');
+    } catch (error) {
+      console.error('Registration failed:', error);
+      Alert.alert('Error', 'Failed to send verification code. Please try again.');
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [phone]);
+
+  // Register phone number when component mounts
+  useEffect(() => {
+    if (phone) {
+      registerPhone();
+    }
+  }, [phone, registerPhone]);
 
   function handlePinChange(value: string, index: number): void {
     if (value.length > 1) return;
@@ -41,90 +66,61 @@ export default function PinVerificationScreen() {
   }
 
   async function verifyPin(pinCode: string): Promise<void> {
+    if (!phone) return;
+    
     setIsVerifying(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      // Verify with backend
+      const tokens = await accountService.verify({ 
+        phone, 
+        code: pinCode 
+      });
 
-    const mockUserData = {
-      phoneNumber: "505 701 28 74",
-      coffeeCount: 15,
-      qrCode: "USER-" + Date.now(),
-      orders: [
-        {
-          id: "1",
-          date: new Date(Date.now() - 86400000).toISOString(),
-          items: ["Cappuccino"],
-          total: 4.5,
-        },
-        {
-          id: "2",
-          date: new Date(Date.now() - 172800000).toISOString(),
-          items: ["Latte", "Croissant"],
-          total: 7.0,
-        },
-        {
-          id: "3",
-          date: new Date(Date.now() - 259200000).toISOString(),
-          items: ["Americano", "Espresso", "Muffin"],
-          total: 8.5,
-        },
-        {
-          id: "4",
-          date: new Date(Date.now() - 345600000).toISOString(),
-          items: ["Cappuccino", "Latte", "Croissant", "Sandwich"],
-          total: 12.0,
-        },
-        {
-          id: "5",
-          date: new Date(Date.now() - 432000000).toISOString(),
-          items: ["Macchiato", "Frappuccino"],
-          total: 9.5,
-        },
-        {
-          id: "6",
-          date: new Date(Date.now() - 518400000).toISOString(),
-          items: ["Espresso", "Cappuccino", "Latte", "Americano", "Mocha"],
-          total: 15.0,
-        },
-        {
-          id: "7",
-          date: new Date(Date.now() - 604800000).toISOString(),
-          items: ["Cold Brew", "Iced Latte"],
-          total: 7.5,
-        },
-        {
-          id: "8",
-          date: new Date(Date.now() - 691200000).toISOString(),
-          items: [
-            "Cappuccino",
-            "Latte",
-            "Americano",
-            "Espresso",
-            "Macchiato",
-            "Frappuccino",
-            "Mocha",
-            "Cold Brew",
-            "Iced Latte",
-            "Flat White",
-          ],
-          total: 25.0,
-        },
-        {
-          id: "9",
-          date: new Date(Date.now() - 777600000).toISOString(),
-          items: ["Cortado", "Ristretto"],
-          total: 6.0,
-        },
-      ],
-    };
 
-    dispatch({ type: "login", payload: mockUserData });
-    router.replace("/(tabs)");
+      console.log('Tokens:', tokens);
+
+      // Store tokens securely
+      await storageService.setItem('accessToken', tokens.accessToken);
+      await storageService.setItem('refreshToken', tokens.refreshToken);
+
+      // Get user profile from backend
+      const userProfile = await accountService.getCustomerDetail();
+      const orders = await accountService.getCustomerOrders();
+
+      // Transform backend data to match our context structure
+      const userData = {
+        phoneNumber: phone,
+        coffeeCount: userProfile.currentCoffees || 0,
+        qrCode: `USER-${userProfile.id}`,
+        orders: orders.map(order => ({
+          id: order.id,
+          date: order.orderDate,
+          items: [`${order.coffeeCount} Coffee(s)`],
+          total: order.earnedReward || 0,
+        })),
+        profile: userProfile,
+      };
+
+      dispatch({ type: "login", payload: userData });
+      router.replace("/(tabs)");
+    } catch (error) {
+      console.error('Verification failed:', error);
+      Alert.alert('Error', 'Invalid verification code. Please try again.');
+      setPin(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setIsVerifying(false);
+    }
   }
 
-  function handleResend(): void {
+  async function handleResend(): Promise<void> {
     setPin(["", "", "", "", "", ""]);
     inputRefs.current[0]?.focus();
+    
+    if (phone) {
+      await registerPhone();
+    }
   }
 
   return (
@@ -138,6 +134,15 @@ export default function PinVerificationScreen() {
               color={colorScheme === "dark" ? "#ffffff" : "#000000"}
             />
           </View>
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-center text-lg font-semibold text-black dark:text-white mb-2">
+            Enter Verification Code
+          </Text>
+          <Text className="text-center text-sm text-neutral-600 dark:text-neutral-400">
+            We sent a code to ****{phone?.slice(-4)}
+          </Text>
         </View>
 
         <View className="flex-row justify-center gap-2.5 mb-8">
@@ -168,9 +173,9 @@ export default function PinVerificationScreen() {
           </Text>
         </Pressable>
 
-        {isVerifying && (
+        {(isVerifying || isRegistering) && (
           <Text className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-4">
-            Verifying...
+            {isRegistering ? 'Sending code...' : 'Verifying...'}
           </Text>
         )}
       </View>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useReducer } from 'react';
 
 export interface Order {
   id: string;
@@ -12,6 +12,16 @@ export interface UserData {
   coffeeCount: number;
   orders: Order[];
   qrCode: string;
+  profile?: {
+    id?: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    currentCoffees?: number;
+    birthDate?: string;
+    pendingRewards?: number;
+    rewardLimit?: number;
+  };
 }
 
 interface AuthState {
