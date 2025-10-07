@@ -100,9 +100,9 @@ export default function OrdersScreen() {
   return (
     <SafeAreaView
       className="flex-1 bg-neutral-50 dark:bg-black"
-      edges={["top", "bottom"]}
+      edges={["bottom"]}
     >
-      <View className="px-5 pt-1 pb-4">
+      <View className="px-5 pt-12 pb-4">
         <View className="mb-6">
           <View className="flex-row items-center">
             <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">

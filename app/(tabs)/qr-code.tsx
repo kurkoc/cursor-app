@@ -13,10 +13,7 @@ export default function QrCodeScreen() {
   const qrValue = state.userData?.qrCode ?? "NO-USER";
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-white dark:bg-black"
-      edges={["top", "bottom"]}
-    >
+    <SafeAreaView className="flex-1 bg-white dark:bg-black" edges={["bottom"]}>
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-5 py-8"

@@ -3,7 +3,14 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -17,19 +24,73 @@ export default function HomeScreen() {
 
   // Drink recommendations data
   const drinkRecommendations = [
-    { id: '1', name: 'Pumpkin Spice Latte', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
-    { id: '2', name: 'Iced Pumpkin Spice Latte', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
-    { id: '3', name: 'Pumpkin Spice Frappuccino®', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
-    { id: '4', name: 'Pumpkin Spice Cream Frappuccino®', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
-    { id: '5', name: 'Caramel Macchiato', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
-    { id: '6', name: 'Iced Caramel Macchiato', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
-    { id: '7', name: 'Cappuccino', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
-    { id: '8', name: 'Americano', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center' },
-    { id: '9', name: 'Mocha', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center' },
-    { id: '10', name: 'Espresso', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center' },
+    {
+      id: "1",
+      name: "Pumpkin Spice Latte",
+      image:
+        "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "2",
+      name: "Iced Pumpkin Spice Latte",
+      image:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "3",
+      name: "Pumpkin Spice Frappuccino®",
+      image:
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "4",
+      name: "Pumpkin Spice Cream Frappuccino®",
+      image:
+        "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "5",
+      name: "Caramel Macchiato",
+      image:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "6",
+      name: "Iced Caramel Macchiato",
+      image:
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "7",
+      name: "Cappuccino",
+      image:
+        "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "8",
+      name: "Americano",
+      image:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "9",
+      name: "Mocha",
+      image:
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center",
+    },
+    {
+      id: "10",
+      name: "Espresso",
+      image:
+        "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop&crop=center",
+    },
   ];
 
-  const renderDrinkItem = ({ item }: { item: typeof drinkRecommendations[0] }) => (
+  const renderDrinkItem = ({
+    item,
+  }: {
+    item: (typeof drinkRecommendations)[0];
+  }) => (
     <View className="items-center mr-6">
       <View className="w-16 h-16 rounded-xl overflow-hidden mb-3 bg-neutral-100 dark:bg-neutral-800">
         <Image
@@ -38,7 +99,11 @@ export default function HomeScreen() {
           resizeMode="cover"
         />
       </View>
-      <Text className="text-sm text-center text-black dark:text-white font-medium" numberOfLines={2} style={{ maxWidth: 80 }}>
+      <Text
+        className="text-sm text-center text-black dark:text-white font-medium"
+        numberOfLines={2}
+        style={{ maxWidth: 80 }}
+      >
         {item.name}
       </Text>
     </View>
@@ -47,10 +112,10 @@ export default function HomeScreen() {
   return (
     <SafeAreaView
       className="flex-1 bg-neutral-50 dark:bg-black"
-      edges={["top", "bottom"]}
+      edges={["bottom"]}
     >
       <ScrollView
-        contentContainerClassName="px-4 pb-5"
+        contentContainerClassName="px-4 pt-6 pb-5"
         showsVerticalScrollIndicator={false}
       >
         {/* Welcome Section */}
@@ -60,13 +125,6 @@ export default function HomeScreen() {
               <Text className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                 Hoşgeldiniz! 👋
               </Text>
-            </View>
-            <View className="w-12 h-12 rounded-full bg-blue-200 dark:bg-blue-800/30 items-center justify-center">
-              <Feather
-                name="coffee"
-                size={20}
-                color={colorScheme === "dark" ? "#60a5fa" : "#3b82f6"}
-              />
             </View>
           </View>
         </View>
@@ -113,13 +171,13 @@ export default function HomeScreen() {
             <Text className="text-xl font-bold text-black dark:text-white">
               Bunları denedin mi?
             </Text>
-            <Pressable onPress={() => router.push('/menu')}>
+            <Pressable onPress={() => router.push("/menu")}>
               <Text className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
                 Tümü →
               </Text>
             </Pressable>
           </View>
-          
+
           <FlatList
             data={drinkRecommendations}
             renderItem={renderDrinkItem}

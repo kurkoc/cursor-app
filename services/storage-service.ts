@@ -1,9 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import * as SecureStore from "expo-secure-store";
 
 /**
- * Platform-specific storage service
- * Uses SecureStore on mobile, AsyncStorage on web
+ * Secure storage service using Expo SecureStore
+ * Provides secure key-value storage for sensitive data
  */
 class StorageService {
   /**
@@ -11,13 +10,8 @@ class StorageService {
    */
   async setItem(key: string, value: string): Promise<void> {
     try {
-      if (Platform.OS === 'web') {
-        await AsyncStorage.setItem(key, value);
-      } else {
-        // Use SecureStore for mobile platforms
-        const { setItemAsync } = await import('expo-secure-store');
-        await setItemAsync(key, value);
-      }
+      await SecureStore.setItemAsync(key, value);
+      console.log(`Stored ${key} securely`);
     } catch (error) {
       console.error(`Failed to store ${key}:`, error);
       throw error;
@@ -29,13 +23,9 @@ class StorageService {
    */
   async getItem(key: string): Promise<string | null> {
     try {
-      if (Platform.OS === 'web') {
-        return await AsyncStorage.getItem(key);
-      } else {
-        // Use SecureStore for mobile platforms
-        const { getItemAsync } = await import('expo-secure-store');
-        return await getItemAsync(key);
-      }
+      const value = await SecureStore.getItemAsync(key);
+      console.log(`Retrieved ${key}:`, value ? "found" : "not found");
+      return value;
     } catch (error) {
       console.error(`Failed to retrieve ${key}:`, error);
       return null;
@@ -47,13 +37,8 @@ class StorageService {
    */
   async removeItem(key: string): Promise<void> {
     try {
-      if (Platform.OS === 'web') {
-        await AsyncStorage.removeItem(key);
-      } else {
-        // Use SecureStore for mobile platforms
-        const { deleteItemAsync } = await import('expo-secure-store');
-        await deleteItemAsync(key);
-      }
+      await SecureStore.deleteItemAsync(key);
+      console.log(`Removed ${key} securely`);
     } catch (error) {
       console.error(`Failed to remove ${key}:`, error);
       throw error;
@@ -65,17 +50,13 @@ class StorageService {
    */
   async clear(): Promise<void> {
     try {
-      if (Platform.OS === 'web') {
-        await AsyncStorage.clear();
-      } else {
-        // For SecureStore, we need to remove items individually
-        // as there's no clear method
-        const { deleteItemAsync } = await import('expo-secure-store');
-        const keys = ['accessToken', 'refreshToken'];
-        await Promise.all(keys.map(key => deleteItemAsync(key)));
-      }
+      // For SecureStore, we need to remove items individually
+      // as there's no clear method
+      const keys = ["accessToken", "refreshToken"];
+      await Promise.all(keys.map((key) => SecureStore.deleteItemAsync(key)));
+      console.log("Cleared all secure storage");
     } catch (error) {
-      console.error('Failed to clear storage:', error);
+      console.error("Failed to clear storage:", error);
       throw error;
     }
   }
@@ -94,4 +75,3 @@ export const storageService = new StorageService();
 
 // Export class for testing
 export { StorageService };
-

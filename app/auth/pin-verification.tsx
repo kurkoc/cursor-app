@@ -3,14 +3,13 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { accountService, storageService } from "@/services";
 import Feather from "@expo/vector-icons/Feather";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PinVerificationScreen() {
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const router = useRouter();
   const { dispatch } = useAuth();
@@ -20,28 +19,6 @@ export default function PinVerificationScreen() {
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
-
-  const registerPhone = useCallback(async (): Promise<void> => {
-    if (!phone) return;
-    
-    setIsRegistering(true);
-    try {
-      await accountService.register({ phone });
-      console.log('Registration successful');
-    } catch (error) {
-      console.error('Registration failed:', error);
-      Alert.alert('Error', 'Failed to send verification code. Please try again.');
-    } finally {
-      setIsRegistering(false);
-    }
-  }, [phone]);
-
-  // Register phone number when component mounts
-  useEffect(() => {
-    if (phone) {
-      registerPhone();
-    }
-  }, [phone, registerPhone]);
 
   function handlePinChange(value: string, index: number): void {
     if (value.length > 1) return;
@@ -67,22 +44,21 @@ export default function PinVerificationScreen() {
 
   async function verifyPin(pinCode: string): Promise<void> {
     if (!phone) return;
-    
+
     setIsVerifying(true);
 
     try {
       // Verify with backend
-      const tokens = await accountService.verify({ 
-        phone, 
-        code: pinCode 
+      const tokens = await accountService.verify({
+        phone,
+        code: pinCode,
       });
 
-
-      console.log('Tokens:', tokens);
+      console.log("Tokens:", tokens);
 
       // Store tokens securely
-      await storageService.setItem('accessToken', tokens.accessToken);
-      await storageService.setItem('refreshToken', tokens.refreshToken);
+      await storageService.setItem("accessToken", tokens.accessToken);
+      await storageService.setItem("refreshToken", tokens.refreshToken);
 
       // Get user profile from backend
       const userProfile = await accountService.getCustomerDetail();
@@ -93,7 +69,7 @@ export default function PinVerificationScreen() {
         phoneNumber: phone,
         coffeeCount: userProfile.currentCoffees || 0,
         qrCode: `USER-${userProfile.id}`,
-        orders: orders.map(order => ({
+        orders: orders.map((order) => ({
           id: order.id,
           date: order.orderDate,
           items: [`${order.coffeeCount} Coffee(s)`],
@@ -105,8 +81,8 @@ export default function PinVerificationScreen() {
       dispatch({ type: "login", payload: userData });
       router.replace("/(tabs)");
     } catch (error) {
-      console.error('Verification failed:', error);
-      Alert.alert('Error', 'Invalid verification code. Please try again.');
+      console.error("Verification failed:", error);
+      Alert.alert("Error", "Invalid verification code. Please try again.");
       setPin(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } finally {
@@ -115,11 +91,20 @@ export default function PinVerificationScreen() {
   }
 
   async function handleResend(): Promise<void> {
+    if (!phone) return;
+
     setPin(["", "", "", "", "", ""]);
     inputRefs.current[0]?.focus();
-    
-    if (phone) {
-      await registerPhone();
+
+    try {
+      await accountService.register({ phone });
+      console.log("Resend successful");
+    } catch (error) {
+      console.error("Resend failed:", error);
+      Alert.alert(
+        "Error",
+        "Failed to resend verification code. Please try again."
+      );
     }
   }
 
@@ -173,9 +158,9 @@ export default function PinVerificationScreen() {
           </Text>
         </Pressable>
 
-        {(isVerifying || isRegistering) && (
+        {isVerifying && (
           <Text className="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-4">
-            {isRegistering ? 'Sending code...' : 'Verifying...'}
+            Verifying...
           </Text>
         )}
       </View>
