@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const router = useRouter();
 
-  const coffeeCount = state.userData?.coffeeCount ?? 0;
+  const coffeeCount = state.userData?.currentCoffees ?? 0;
   const progress = coffeeCount % 10;
   const freeEarned = Math.floor(coffeeCount / 10);
 

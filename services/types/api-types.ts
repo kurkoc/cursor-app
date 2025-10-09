@@ -15,10 +15,10 @@ export interface RegisterDto {
 }
 
 export interface CustomerUpdateDto {
-  firstName: string;
-  lastName: string;
-  birthDate: string; // ISO date-time string
-  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  email: string | null;
 }
 
 export interface FeedbackSaveDto {
@@ -28,12 +28,13 @@ export interface FeedbackSaveDto {
 
 export interface CreateDeviceDto {
   deviceId: string;
-  type: string;
-  name: string;
-  brand: string;
-  os: string;
-  osVersion: string;
-  model: string;
+  type: string | null;
+  name: string | null;
+  brand: string | null;
+  os: string | null;
+  osVersion: string | null;
+  model: string | null;
+  isSimulator: boolean;
 }
 
 // ============== Response DTOs ==============
@@ -44,14 +45,16 @@ export interface JwtTokenResponse {
 }
 
 export interface CustomerDetailDto {
-  id?: string; // UUID
+  id: string;
+  phone: string;
   firstName?: string | null;
   lastName?: string | null;
   email?: string | null;
   currentCoffees?: number;
-  birthDate?: string; // ISO date-time string
+  birthDate?: string | null;
   pendingRewards?: number;
-  rewardLimit?: number;
+  totalCoffees?: number;
+  lastOrderDate?: string | null;
 }
 
 export interface CustomerQrDto {
@@ -71,4 +74,3 @@ export interface OrderListDto {
 
 export type ApiResponse<T> = T;
 export type ApiErrorResponse = string[];
-

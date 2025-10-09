@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { accountService, storageService } from "@/services";
+import { accountService, deviceService, storageService } from "@/services";
 import Feather from "@expo/vector-icons/Feather";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -54,31 +54,17 @@ export default function PinVerificationScreen() {
         code: pinCode,
       });
 
-      console.log("Tokens:", tokens);
-
       // Store tokens securely
-      await storageService.setItem("accessToken", tokens.accessToken);
-      await storageService.setItem("refreshToken", tokens.refreshToken);
+      await storageService.setToken(tokens.accessToken);
+      await storageService.setRefreshToken(tokens.refreshToken);
+
+      // Register device if needed (only once)
+      await deviceService.registerDeviceIfNeeded();
 
       // Get user profile from backend
       const userProfile = await accountService.getCustomerDetail();
-      const orders = await accountService.getCustomerOrders();
 
-      // Transform backend data to match our context structure
-      const userData = {
-        phoneNumber: phone,
-        coffeeCount: userProfile.currentCoffees || 0,
-        qrCode: `USER-${userProfile.id}`,
-        orders: orders.map((order) => ({
-          id: order.id,
-          date: order.orderDate,
-          items: [`${order.coffeeCount} Coffee(s)`],
-          total: order.earnedReward || 0,
-        })),
-        profile: userProfile,
-      };
-
-      dispatch({ type: "login", payload: userData });
+      dispatch({ type: "login", payload: userProfile });
       router.replace("/(tabs)");
     } catch (error) {
       console.error("Verification failed:", error);

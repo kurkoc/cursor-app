@@ -10,7 +10,12 @@ export default function QrCodeScreen() {
   const { state } = useAuth();
   const colorScheme = useColorScheme();
 
-  const qrValue = state.userData?.qrCode ?? "NO-USER";
+  // If no user data, don't render the screen
+  if (!state.userData?.id) {
+    return null;
+  }
+
+  const qrValue = `USER-${state.userData.id}`;
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-black" edges={["bottom"]}>

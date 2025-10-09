@@ -1,13 +1,49 @@
-import { Order, useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { accountService } from "@/services";
+import type { OrderListDto } from "@/services/types/api-types";
 import Feather from "@expo/vector-icons/Feather";
-import React from "react";
-import { FlatList, Text, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const { state } = useAuth();
   const colorScheme = useColorScheme();
+  const [orders, setOrders] = useState<OrderListDto[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // Fetch orders when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrders();
+    }, [])
+  );
+
+  async function fetchOrders() {
+    if (!state.isAuthenticated) return;
+
+    setIsLoading(true);
+    setHasError(false);
+
+    try {
+      const backendOrders = await accountService.getCustomerOrders();
+      setOrders(backendOrders);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -29,10 +65,8 @@ export default function OrdersScreen() {
     });
   }
 
-  function renderOrder({ item }: { item: Order }) {
-    // Her 10 kahve için 1 ikram kazanılır
-    const rewardsEarned = Math.floor(item.items.length / 10);
-    const hasReward = rewardsEarned > 0;
+  function renderOrder({ item }: { item: OrderListDto }) {
+    const hasReward = item.earnedReward > 0;
 
     return (
       <View className="bg-white dark:bg-neutral-900 rounded-xl px-2 py-3 mb-3 border border-neutral-200 dark:border-neutral-800 mx-0">
@@ -45,12 +79,12 @@ export default function OrdersScreen() {
                 color={colorScheme === "dark" ? "#a3a3a3" : "#737373"}
               />
               <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 ml-2">
-                {formatDate(item.date)}
+                {formatDate(item.orderDate)}
               </Text>
             </View>
             <View className="flex-row items-center">
               <Text className="text-xl font-bold text-black dark:text-white mr-2">
-                {item.items.length}
+                {item.coffeeCount}
               </Text>
               <Feather
                 name="coffee"
@@ -63,7 +97,7 @@ export default function OrdersScreen() {
           {hasReward && (
             <View className="flex-row items-center bg-amber-100 dark:bg-amber-900/30 rounded-full px-3 py-2">
               <Text className="text-lg font-bold text-amber-900 dark:text-amber-100 mr-1">
-                {rewardsEarned}
+                {item.earnedReward}
               </Text>
               <Feather
                 name="gift"
@@ -73,6 +107,46 @@ export default function OrdersScreen() {
             </View>
           )}
         </View>
+      </View>
+    );
+  }
+
+  function renderLoadingState() {
+    return (
+      <View className="items-center justify-center pt-20">
+        <ActivityIndicator
+          size="large"
+          color={colorScheme === "dark" ? "#ffffff" : "#000000"}
+        />
+        <Text className="text-sm text-neutral-500 dark:text-neutral-400 mt-4">
+          Loading orders...
+        </Text>
+      </View>
+    );
+  }
+
+  function renderErrorState() {
+    return (
+      <View className="items-center justify-center pt-20">
+        <View className="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900/20 items-center justify-center mb-5 border border-red-200 dark:border-red-800">
+          <Feather
+            name="alert-circle"
+            size={40}
+            color={colorScheme === "dark" ? "#fca5a5" : "#dc2626"}
+          />
+        </View>
+        <Text className="text-lg font-semibold text-black dark:text-white mb-2">
+          Failed to load orders
+        </Text>
+        <Text className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+          Please try again
+        </Text>
+        <Pressable
+          onPress={fetchOrders}
+          className="bg-blue-500 px-4 py-2 rounded-lg"
+        >
+          <Text className="text-white font-medium">Retry</Text>
+        </Pressable>
       </View>
     );
   }
@@ -117,14 +191,20 @@ export default function OrdersScreen() {
             </Text>
           </View>
         </View>
-        <FlatList
-          data={state.userData?.orders ?? []}
-          renderItem={renderOrder}
-          keyExtractor={(item) => item.id}
-          contentContainerClassName="px-0 pb-5"
-          ListEmptyComponent={renderEmptyState}
-          showsVerticalScrollIndicator={false}
-        />
+        {isLoading ? (
+          renderLoadingState()
+        ) : hasError ? (
+          renderErrorState()
+        ) : (
+          <FlatList
+            data={orders}
+            renderItem={renderOrder}
+            keyExtractor={(item) => item.id}
+            contentContainerClassName="px-0 pb-5"
+            ListEmptyComponent={renderEmptyState}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
